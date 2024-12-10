@@ -1,0 +1,39 @@
+﻿@model IEnumerable<KuaforPersoneliListVm>
+
+<h2>Kuaför Personeli Listesi</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            
+            <th>Adı</th>
+            <th>Soyadı</th>
+            <th>Doğum Tarihi</th>
+            <th>Görevi</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var personel in Model)
+        {
+            <tr>
+                
+                <td>@personel.Adi</td>
+                <td>@personel.Soyadi</td>
+                <td>@personel.DogumTarihi.ToString("d")</td>
+                <td>@personel.Gorevi</td>
+                <td>
+                    <a asp-action="UpdatePerson" asp-route-id="@personel.ID" class="btn btn-sm btn-primary">Güncelle</a>
+
+                    <form asp-action="DeletePersonel" method="post" style="display:inline;"
+                          onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                        <input type="hidden" name="id" value="@personel.ID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="CreatePerson" class="btn btn-success">Yeni Kuaför Personeli Ekle</a>

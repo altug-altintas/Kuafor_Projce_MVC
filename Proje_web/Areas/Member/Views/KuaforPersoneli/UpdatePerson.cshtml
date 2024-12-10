@@ -1,0 +1,44 @@
+﻿@model PersonUpdateVm
+
+<h2>Kuaför Personeli Güncelle</h2>
+
+<form asp-action="UpdatePerson" method="post">
+    <input type="hidden" asp-for="ID" /> <!-- ID'yi gizli alan olarak ekleyin -->
+    <div class="form-group">
+        <label asp-for="Adi"></label>
+        <input asp-for="Adi" class="form-control" />
+        <span asp-validation-for="Adi" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Soyadi"></label>
+        <input asp-for="Soyadi" class="form-control" />
+        <span asp-validation-for="Soyadi" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DogumTarihi"></label>
+        <input asp-for="DogumTarihi" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Adres"></label>
+        <input asp-for="Adres" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Telefon"></label>
+        <input asp-for="Telefon" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="TC"></label>
+        <input asp-for="TC" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="IseBaslangicTarihi"></label>
+        <input asp-for="IseBaslangicTarihi" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Gorevi"></label>
+        <input asp-for="Gorevi" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Güncelle</button>
+    <a asp-action="ListPersonel" class="btn btn-secondary">Geri</a>
+</form>

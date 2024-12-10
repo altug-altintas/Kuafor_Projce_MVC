@@ -1,0 +1,239 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    text-transform: capitalize;
+    font-size: 1rem;
+}
+
+
+@media (min-width: 768px) {
+    html {
+        font-size: 1rem;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+    
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    text-transform:capitalize;
+}
+
+
+
+
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+/* site.css */
+
+@media (max-width: 576px) {
+    table tbody tr {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        margin-bottom: 15px;
+        /* Satırları ayıran kalın kenarlık */
+        border-radius: 8px; /* Kart görünümü için köşeleri yuvarla */
+        margin-bottom: 20px;
+        border: 2px solid black; /* Satırlar arasında boşluk bırak */
+    }
+
+
+
+
+
+        table tbody tr td {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            text-align: left;
+            word-break: break-word;
+            border: none;
+            position: relative;
+        }
+
+
+            /* Butonlar için ayrı ayrı bloklar */
+            table tbody tr td.buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 5px;
+                border-radius: 8px;
+                /* Butonların üstüne boşluk ekle */
+            }
+
+                table tbody tr td.buttons button {
+                    width: 100%;
+                    margin-bottom: 5px;
+                }
+
+    table thead {
+        display: none; /* Başlıkları gizle */
+    }
+
+
+
+
+
+    /* Mobilde, sadece 'data-label' başlıkları sola yaslayacak */
+    table tbody tr td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        margin-right: 10px;
+        display: flex;
+        text-align: center;
+        border-bottom: 2px solid #000; /* Altı çizili yapmak için */
+        margin-bottom: 5px; /* Başlık ile veri arasındaki boşluğu artırmak */
+    }
+
+    .btn-sm {
+        padding: 0.2rem 0.5rem;
+    }
+
+    /* Butonları alt alta hizalamak */
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .buttons form {
+            width: 100%;
+            margin-bottom: 5px; /* Butonlar arasında boşluk */
+        }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 15px;/* Butonları tam genişlikte yap */
+    }
+
+    /* Sil butonunu gizle */
+    table tbody tr td[data-label="Sil"] {
+        display: none;
+    }
+
+
+    .card {
+        margin: 0 auto; /* Kartı ortala */
+        width: 90%; /* Kart genişliğini daralt */
+    }
+
+    .card-body {
+        text-align: center; /* Kart içeriğini ortala */
+    }
+
+    .form-group {
+        text-align: center; /* Form grubu içeriğini ortala */
+    }
+
+    .form-control {
+        width: 100%;
+        margin: 0 auto; /* Inputları ortala */
+    }
+    .card-text {
+        text-align: center;
+        margin: 0 auto;
+        width: 90%;
+        offset-2 ;
+    }
+
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border: 2px solid #000;
+}
+
+    table th,
+    table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+    }
+
+thead {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+

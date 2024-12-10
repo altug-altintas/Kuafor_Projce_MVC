@@ -1,0 +1,131 @@
+﻿  @model Proje_web.Models.VMs.HMTakvimVm
+
+
+
+<head>
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+
+
+
+<style>
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .day {
+        border: 1px solid #ddd;
+        padding: 10px;
+        position: relative;
+    }
+
+    .no-navbar .navbar {
+        display: none;
+    }
+    .day-header {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .event {
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        padding: 5px;
+        margin-top: 5px;
+        text-align: center;
+    }
+
+    .no-records {
+        color: #d9534f;
+        margin-top: 20px;
+    }
+</style>
+<div class="row" style="margin-top:20px;">
+    <div class="card-text col-md-12 bg-info text-white text-center  ">
+        <h2>@Model.KuaforAdi </h2>
+    </div>
+</div>
+@if (Model.SelectedPersonelId > 0)
+{
+    <h2>@Model.SelectedPersoneAdi'ye ait Takvim</h2>
+}
+<br />
+
+<form asp-action="Kuafor" method="post">
+    <div class="form-group">
+        <select asp-for="SelectedPersonelId" class="form-control" asp-items="@(new SelectList(Model.Personeller, "ID", "Adi"))" onchange="this.form.submit();">
+            <option value="">Personel Seçin</option>
+        </select>
+        <span asp-validation-for="SelectedPersonelId" class="text-danger"></span>
+        
+        <input type="hidden" id="" asp-for="AppUserId" value="@Model.AppUserId" />
+    </div>
+</form >
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+@if (Model.Takvimler != null && Model.Takvimler.Any())
+{
+    <div class="calendar">
+        <div class="day-header">Pazartesi</div>
+        <div class="day-header">Salı</div>
+        <div class="day-header">Çarşamba</div>
+        <div class="day-header">Perşembe</div>
+        <div class="day-header">Cuma</div>
+        <div class="day-header">Cumartesi</div>
+        <div class="day-header">Pazar</div>
+        @for (int i = 0; i < 42; i++) 
+        {
+            var currentDate = DateTime.Now.AddDays(i - (int)DateTime.Now.DayOfWeek + 1); 
+            var takvimItems = Model.Takvimler.Where(t => t.YapilacakisLemTarihiBaslangic.Date == currentDate.Date).ToList();
+
+            <div class="day">
+                <strong>@currentDate.Day</strong>
+
+
+                @foreach (var item in takvimItems)
+                {
+                    var fark = item.YapilacakisLemTarihiBitis - item.YapilacakisLemTarihiBaslangic;
+                    <div class="event">
+                        <h5>@item.Islem.isLemAdi</h5>
+                        @item.YapilacakisLemTarihiBaslangic.ToString("HH:mm") ile
+                        @item.YapilacakisLemTarihiBitis.ToString("HH:mm") arasında
+                    </div>
+                }
+
+            </div>
+        }
+    </div>
+}
+else if (Model.SelectedPersonelId > 0)
+{
+    <div class="no-records">
+        Seçilen personel için herhangi bir takvim kaydı bulunmamaktadır.
+    </div>
+}
+
+<script>
+
+  
+    // Personel seçildiğinde navbar'ı gizlemeye devam et
+    function toggleNavbar() {
+        document.body.classList.add('no-navbar'); // Navbar gizlensin
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectedPersonelId = "@Model.SelectedPersonelId";
+        var personelAdi = "@Model.SelectedPersoneAdi";
+        document.body.classList.add('no-navbar'); // Navbar gizlensin
+
+        
+    });
+</script>

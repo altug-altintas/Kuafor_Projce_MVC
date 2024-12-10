@@ -1,0 +1,29 @@
+﻿@model Proje_web.Models.VMs.appUserListVM
+
+
+<div class="row" style="margin-top:20px;">
+    <div class="card-text col-md-12 bg-info text-white text-center  ">
+        <h2>Kuaför Listesi</h2>
+    </div>
+</div>
+<br />
+<form id="userForm" method="get">
+    <div class="form-group">
+        <select asp-for="SelectedAppUserId" class="form-control" asp-items="@(new SelectList(Model.AppUsers, "Value", "Text"))" onchange="redirectToKuaforPage(this.value);">
+            <option value="">Personel Seçin</option>
+        </select>
+        <span asp-validation-for="SelectedAppUserId" class="text-danger"></span>
+    </div>
+</form>
+
+<script>
+    // Formdan gelen veriye göre yönlendirme yapacak fonksiyon
+    function redirectToKuaforPage(userId) {
+        if (userId) {
+            // URL'yi dinamik oluşturuyoruz
+            window.location.href = '/Kuafor/' + userId;
+        }
+    }
+
+
+</script>

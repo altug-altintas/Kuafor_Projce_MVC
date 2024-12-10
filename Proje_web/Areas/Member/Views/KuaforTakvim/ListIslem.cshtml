@@ -1,0 +1,79 @@
+﻿@model Proje_web.Areas.Member.Models.VMs.TakvimVm
+
+<h2>Takvim Listesi</h2>
+<head>
+   <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+
+</head>
+<form asp-action="ListIslem" method="get">
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="SelectedPersonelId">Personel Seçin</label>
+            <select asp-for="SelectedPersonelId" class="form-control" asp-items="@(new SelectList(Model.Personeller, "ID", "Adi"))" onchange="this.form.submit();">
+                <option value="">Personel Seçin</option>
+            </select>
+            <span asp-validation-for="SelectedPersonelId" class="text-danger"></span>
+        </div>
+
+       
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="StartDate">Başlangıç Tarihi Seçin</label>
+            <input type="date" name="StartDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" onchange="this.form.submit();" />
+        </div>
+
+    </div>
+
+
+</form>
+
+@if (Model.Takvimler.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover" >
+            <thead class="thead-dark">
+            <thead>
+                <tr>
+                    <th>Personel</th>
+                    <th>İşlem</th>
+                    <th>Fiyat</th>
+                    <th>Başlangıç Tarihi</th>
+                    <th>Bitiş Tarihi</th>
+                    <th class="text-center">Güncelle</th>
+                    <th class="text-center">Sil</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Takvimler)
+                {
+                    <tr>
+                        <td data-label="Personel">@item.Personel?.Adi</td>
+                        <td data-label="İşlem">@item.Islem?.isLemAdi</td>
+                        <td data-label="Fiyat" id="fiyatCell">@item.isLemUcreti</td>
+                        <td data-label="Başlangıç Tarihi">@item.YapilacakisLemTarihiBaslangic.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td data-label="Bitiş Tarihi">@item.YapilacakisLemTarihiBitis.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td class="buttons">
+                            <form asp-action="UpdateIslem" method="get">
+                                <input type="hidden" name="id" value="@item.ID" />
+                                <button type="submit" class="btn btn-warning">Güncelle</button>
+                            </form>
+                        </td>
+                        <td class="buttons" >
+                            <form asp-action="DeleteIslem" method="post" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                <input type="hidden" name="id" value="@item.ID" />
+                                <button type="submit" class="btn btn-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Seçilen personel için herhangi bir takvim kaydı bulunmamaktadır.
+    </div>
+}

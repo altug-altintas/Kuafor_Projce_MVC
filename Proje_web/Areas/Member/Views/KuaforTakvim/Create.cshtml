@@ -1,0 +1,145 @@
+﻿@model KuaforTakvimCreateVm
+
+<h2>Yeni Randevu Kaydı Oluştur</h2>
+<head>
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+</head>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Personelid">Personel Seçin</label>
+        <select asp-for="Personelid" class="form-control" asp-items="ViewBag.Personeller"> <option value="">Personel Seçin</option></select>
+        <span asp-validation-for="Personelid" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Islemid">İşlem Seçin</label>
+        <select asp-for="Islemid" class="form-control" asp-items="ViewBag.Islemler" onchange="updateEndDate()"><option value="">İşlem Seçin</option></select>
+        <span asp-validation-for="Islemid" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="isLemUcreti">İşlem Ücreti</label>
+        <input type="text" id="isLemUcreti" name="isLemUcreti" class="form-control" value="@ViewBag.isLemUcreti" />
+    </div>
+    <div class="form-group">
+        <label asp-for="YapilacakisLemTarihiBaslangic">İşlem Başlangıç </label>
+        <input asp-for="YapilacakisLemTarihiBaslangic" type="datetime-local" class="form-control" onchange="updateEndDate()" />
+        <span asp-validation-for="YapilacakisLemTarihiBaslangic" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="YapilacakisLemTarihiBitis">İşlem Bitiş Tarihi</label>
+        <input asp-for="YapilacakisLemTarihiBitis" type="datetime-local" class="form-control" />
+        <span asp-validation-for="YapilacakisLemTarihiBitis" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+
+    var isFiyatDegisti = false; // Fiyatın değişip değişmediğini kontrol etmek için bayrak
+
+    function updateEndDate() {
+        var islemId = document.querySelector('select[name="Islemid"]').value;
+        var baslangicDateTime = new Date(document.querySelector('input[name="YapilacakisLemTarihiBaslangic"]').value);
+
+        if (!isNaN(baslangicDateTime.getTime())) {
+            // AJAX isteği yaparak işlem süresini al
+            fetch(`/member/KuaforTakvim/GetIslemSuresi?id=${islemId}`)
+                .then(response => response.json())
+                .then(sureDakika => {
+                    var bitisDateTime;
+
+                    if (sureDakika > 60) {
+                        // Süre 60 dakikadan fazla ise 1 saat ekle
+                        bitisDateTime = new Date(baslangicDateTime.getTime() + (1 * 60 * 60 * 1000));
+                    } else {
+                        // Süre 60 dakikadan az ise süre dakikayı ekle
+                        bitisDateTime = new Date(baslangicDateTime.getTime() + (sureDakika * 60000));
+                    }
+
+                    // Bitiş tarihini başlangıç tarihi ile aynı gün olarak ayarla
+                    bitisDateTime.setFullYear(baslangicDateTime.getFullYear());
+                    bitisDateTime.setMonth(baslangicDateTime.getMonth());
+                    bitisDateTime.setDate(baslangicDateTime.getDate());
+
+                    // Bitiş tarihini input alanına yerleştir
+                    // Zaman dilimini korumak için, yerel zaman formatında döndür
+                    document.querySelector('input[name="YapilacakisLemTarihiBitis"]').value = bitisDateTime.toLocaleString('sv-SE', { hour12: false }).slice(0, 16);
+                });
+        }
+
+        // Fiyatı yalnızca bir kez değiştireceğiz
+        if (!isFiyatDegisti) {
+            var islemId = $('#Islemid').val();
+            if (islemId) {
+                $.ajax({
+                    url: '@Url.Action("GetIslemUcret", "KuaforTakvim")',
+                    data: { id: islemId },
+                    type: 'GET',
+                    success: function (data) {
+                        $('#isLemUcreti').val(data);  // İşlem ücretini input'a yaz
+                        isFiyatDegisti = true; // Fiyat değiştiği için bayrağı set et
+                    }
+                });
+            } else {
+                $('#isLemUcreti').val("");  // İşlem seçilmediyse ücret kutusunu temizle
+            }
+        }
+    }
+
+    // function updateEndDate() {
+    //     var islemId = document.querySelector('select[name="Islemid"]').value;
+    //     var baslangicDateTime = new Date(document.querySelector('input[name="YapilacakisLemTarihiBaslangic"]').value);
+
+    //     if (!isNaN(baslangicDateTime.getTime())) {
+    //         // AJAX isteği yaparak işlem süresini al
+    //         fetch(`/member/KuaforTakvim/GetIslemSuresi?id=${islemId}`)
+    //             .then(response => response.json())
+    //             .then(sureDakika => {
+    //                 var bitisDateTime;
+
+    //                 if (sureDakika > 60) {
+    //                     // Süre 60 dakikadan fazla ise 1 saat ekle
+    //                     bitisDateTime = new Date(baslangicDateTime.getTime() + (1 * 60 * 60 * 1000));
+    //                 } else {
+    //                     // Süre 60 dakikadan az ise süre dakikayı ekle
+    //                     bitisDateTime = new Date(baslangicDateTime.getTime() + (sureDakika * 60000));
+    //                 }
+
+    //                 // Bitiş tarihini başlangıç tarihi ile aynı gün olarak ayarla
+    //                 bitisDateTime.setFullYear(baslangicDateTime.getFullYear());
+    //                 bitisDateTime.setMonth(baslangicDateTime.getMonth());
+    //                 bitisDateTime.setDate(baslangicDateTime.getDate());
+
+    //                 // Bitiş tarihini input alanına yerleştir
+    //                 // Zaman dilimini korumak için, yerel zaman formatında döndür
+    //                 document.querySelector('input[name="YapilacakisLemTarihiBitis"]').value = bitisDateTime.toLocaleString('sv-SE', { hour12: false }).slice(0, 16);
+    //             });
+    //     }
+
+
+    //     var islemId = $('#Islemid').val();
+    //     if (islemId) {
+    //         $.ajax({
+    //             url: '@Url.Action("GetIslemUcret", "KuaforTakvim")',
+    //             data: { id: islemId },
+    //             type: 'GET',
+    //             success: function (data) {
+    //                 $('#isLemUcreti').val(data);  // İşlem ücretini input'a yaz
+    //             }
+    //         });
+    //     } else {
+    //         $('#isLemUcreti').val("");  // İşlem seçilmediyse ücret kutusunu temizle
+    //     }
+
+    // }
+
+</script>
+
+           
