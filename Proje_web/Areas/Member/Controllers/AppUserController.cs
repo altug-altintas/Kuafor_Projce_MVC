@@ -10,10 +10,12 @@ using Proje_Dal.Repositories.Interfaces.Concrete;
 using Proje_model.Models.Enums;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 
 namespace Proje_web.Areas.Member.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Area("Member")]
     public class AppUserController : Controller
     {
@@ -43,9 +45,11 @@ namespace Proje_web.Areas.Member.Controllers
 
         public async Task<IActionResult> Index()
         {
-            AppUser appUser = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var appUser = await _userManager.FindByIdAsync(userId);
+           // AppUser appUser = await _userManager.GetUserAsync(User);
 
-            var personeller = _personelRepo.GetDefaults(x => x.Statu != Statu.Passive && x.AppUserID==appUser.Id);
+            var personeller = _personelRepo.GetDefaults(x => x.Statu != Statu.Passive && x.AppUserID== userId;
             var model = new TakvimVm
             {
                 Personeller = personeller,
@@ -59,17 +63,19 @@ namespace Proje_web.Areas.Member.Controllers
                 model.Takvimler = new List<KuaforTakvim>();
             }
 
-            return View(model);
+            return Json(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(TakvimVm model)
         {
-            AppUser appUser = await _userManager.GetUserAsync(User);
+            // AppUser appUser = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var appUser = await _userManager.FindByIdAsync(userId);
             if (model.SelectedPersonelId > 0)
             {
 
-                var takvimler = _takvimRepo.GetDefaults(x => x.Personelid == model.SelectedPersonelId && x.Statu != Statu.Passive && x.AppUserID == appUser.Id);
+                var takvimler = _takvimRepo.GetDefaults(x => x.Personelid == model.SelectedPersonelId && x.Statu != Statu.Passive && x.AppUserID == userId);
                 var islemIds = takvimler.Select(t => t.Islemid).Distinct().ToList();
                 var islemler = _islemRepo.GetByDefaults(i => i, i => islemIds.Contains(i.ID));
 
@@ -92,8 +98,8 @@ namespace Proje_web.Areas.Member.Controllers
 
             }
 
-            model.Personeller = _personelRepo.GetDefaults(x => x.Statu != Statu.Passive && x.AppUserID == appUser.Id);
-            return View(model);
+            model.Personeller = _personelRepo.GetDefaults(x => x.Statu != Statu.Passive && x.AppUserID ==userId);
+            return Json(model);
         }
 
 
@@ -101,8 +107,10 @@ namespace Proje_web.Areas.Member.Controllers
         [HttpGet]
         public async Task< IActionResult> GetEvents()
         {
-            AppUser appUser = await _userManager.GetUserAsync(User);
-            var takvimler = _takvimRepo.GetDefaults(x => x.Personelid == 1 && x.AppUserID == appUser.Id);  
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var appUser = await _userManager.FindByIdAsync(userId);
+           // AppUser appUser = await _userManager.GetUserAsync(User);
+            var takvimler = _takvimRepo.GetDefaults(x => x.Personelid == 1 && x.AppUserID == userId);  
 
             var events = takvimler.Select(t => new
             {

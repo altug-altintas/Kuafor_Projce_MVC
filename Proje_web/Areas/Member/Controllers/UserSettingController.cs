@@ -16,10 +16,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Proje_web.Areas.Member.Models.VMs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 
 namespace Proje_web.Areas.Member.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Area("Member")]
     public class UserSettingController : Controller
     {
@@ -42,38 +44,51 @@ namespace Proje_web.Areas.Member.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Setting(int id)
+        public async Task<IActionResult> Setting()
         {
-            AppUser appUser = await _userManager.GetUserAsync(User);
 
-            var updateuser = _mapper.Map<UserUpdateDTO>(appUser);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
 
 
-            return View(updateuser);
+            var appUser = await _userManager.FindByIdAsync(userId);
 
+            if (appUser == null)
+            {
+                return NotFound();
+            }
+
+            var updateUser = _mapper.Map<UserUpdateDTO>(appUser);
+
+            return Json(updateUser);
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> Setting(UserUpdateDTO dTO)
+        public async Task<IActionResult> Setting([FromBody] UserUpdateDTO dTO)
         {
             if (ModelState.IsValid && dTO.Image != null)
             {
+                var userId = User.FindFirstValue(ClaimTypes.Name);
+                var appUser = await _userManager.FindByIdAsync(userId);
 
-                AppUser appUser = await _userManager.GetUserAsync(User);  //kullanıcı bilgileri
+                // AppUser appUser = await _userManager.GetUserAsync(User);  //kullanıcı bilgileri
 
                 string currentUserEmail = appUser.Email;
                 string currentUSer = appUser.UserName;
                 if (!_userRepo.IsEmailUniqueHaric(dTO.Email, currentUserEmail))
                 {
                     ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanılıyor.");
-                    return View(dTO);
+                    return Json(dTO);
                 }
                 if (!_userRepo.IsUserlUniqueHaric(dTO.UserName, currentUSer))
                 {
                     ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten mevcut.");
-                    return View(dTO);
+                    return Json(dTO);
                 }
 
                 appUser.FirstName = dTO.FirstName;
@@ -103,13 +118,20 @@ namespace Proje_web.Areas.Member.Controllers
                 var updateResult = await _userManager.UpdateAsync(appUser);
 
 
-                return RedirectToAction("Setting");
+                //  return RedirectToAction("Setting");
+                return Json(new { success = true, redirectUrl = Url.Action("Setting") });
+
 
             }
 
             else
             {
-                AppUser appUser = await _userManager.GetUserAsync(User);
+
+                var userId = User.FindFirstValue(ClaimTypes.Name);
+
+
+                var appUser = await _userManager.FindByIdAsync(userId);
+                //AppUser appUser = await _userManager.GetUserAsync(User);
 
                 string currentUserEmail = appUser.Email;
                 string currentUSer = appUser.UserName;
@@ -117,13 +139,13 @@ namespace Proje_web.Areas.Member.Controllers
                 {
                     dTO.ImagePath = appUser.ImagePath;
                     ModelState.AddModelError("Email", "Bu e-posta adresi zaten kullanılıyor.");
-                    return View(dTO);
+                    return Json(dTO);
                 }
                 if (!_userRepo.IsUserlUniqueHaric(dTO.UserName, currentUSer))
                 {
                     dTO.ImagePath = appUser.ImagePath;
                     ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten mevcut.");
-                    return View(dTO);
+                    return Json(dTO);
                 }
 
                 appUser.FirstName = dTO.FirstName;
@@ -140,18 +162,26 @@ namespace Proje_web.Areas.Member.Controllers
 
                 var updateResult = await _userManager.UpdateAsync(appUser);
 
-                return RedirectToAction("Setting");
+                // return RedirectToAction("Setting");
+                return Json(new { success = true, redirectUrl = Url.Action("Setting") });
+
 
             }
         }
 
         public async Task<IActionResult> Delete()
         {
-            var appUser = await _userManager.GetUserAsync(User);
+            //  var appUser = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+
+
+
+
+            var appUser = await _userManager.FindByIdAsync(userId);
 
             await _userRepo.Delete(appUser);
 
-            return RedirectToAction("LogOut");
+            return Json(new { success = true, redirectUrl = Url.Action("LogOut") });
 
         }
 
@@ -176,7 +206,7 @@ namespace Proje_web.Areas.Member.Controllers
                     if (isPasswordHistoryViolated)
                     {
                         ModelState.AddModelError("NewPassword", "Yeni şifre geçmiş şifrelerden birini içeremez.");
-                        return View(vM);
+                        return Json(vM);
                     }
 
                     // Şifre değiştirme işlemi
@@ -198,7 +228,9 @@ namespace Proje_web.Areas.Member.Controllers
                         await _signInManager.SignOutAsync();
 
                         // Başarılı işlem
-                        return RedirectToAction("LogOut");
+                        // return RedirectToAction("LogOut");
+                        return Json(new { success = true, redirectUrl = Url.Action("LogOut") });
+
                     }
                     else
                     {
@@ -208,7 +240,7 @@ namespace Proje_web.Areas.Member.Controllers
                 }
             }
 
-            return View(vM);
+            return Json(vM);
         }
 
         //public async Task<IActionResult> ChangePassword(ChangePasswordVM vM)

@@ -60,11 +60,11 @@ namespace Proje_web.Controllers
                 SelectedAppUserName = string.Empty
             };
 
-            return View(model);
+            return Json(model);
         }
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Index(appUserListVM model)
+        public async Task<IActionResult> Index([FromBody]appUserListVM model)
         {
             
 
@@ -75,7 +75,7 @@ namespace Proje_web.Controllers
                 Text = x.FirstName
             }).ToList();
 
-            return View(model);
+            return Json(model);
         }
 
 
@@ -104,7 +104,7 @@ namespace Proje_web.Controllers
             {
                 model.Takvimler = new List<KuaforTakvim>();
             }
-            return View(model);
+            return Json(model);
         }
         [AllowAnonymous]
         [HttpPost("Kuafor/{userId}")]
@@ -141,7 +141,7 @@ namespace Proje_web.Controllers
             }
 
             model.Personeller = _personelRepo.GetDefaults(x => x.Statu != Statu.Passive && x.AppUserID == appUserId);
-            return View(model);
+            return Json(model);
         }
 
 
